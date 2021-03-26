@@ -36,7 +36,7 @@ public class BoardServiceImpl implements BoardService {
 	
 	@Override
 	public Board getBoardDetails(Long userId, Long id) {
-		return boardRepository.findByAppUserIdAndId(userId, id)
+		return boardRepository.findByStatusEnabledIsTrueAndAppUserIdAndId(userId, id)
 				.orElseThrow(() -> getBoardException(id));
 	}
 

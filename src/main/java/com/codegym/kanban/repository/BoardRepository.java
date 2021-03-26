@@ -16,7 +16,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 	
 	List<BoardInfoDTO> findByStatusEnabledIsFalseAndAppUserIdOrderByStatusUpdatedAtDesc(Long appUserId);
 	
-	Optional<Board> findByAppUserIdAndId(Long appUserId, Long id);
+	Optional<Board> findByStatusEnabledIsTrueAndAppUserIdAndId(Long appUserId, Long id);
 	
 	@Modifying
 	@Query("UPDATE Board b SET b.status.enabled = FALSE "

@@ -42,7 +42,7 @@ public class CardColumn {
 	@Embedded
 	private Status status;
 	
-	@OneToMany(mappedBy = "cardColumn", fetch = FetchType.EAGER, orphanRemoval = true)
+	@OneToMany(mappedBy = "cardColumn",fetch = FetchType.LAZY, orphanRemoval = true)
 	private List<Card> cards;
 
 	@Override
