@@ -2,12 +2,13 @@ package com.codegym.kanban.service;
 
 import java.util.List;
 
+import com.codegym.kanban.dto.BoardInfoDTO;
 import com.codegym.kanban.model.Board;
 
 public interface BoardService {
-	List<Board> getAvailableBoards(Long userId);
+	List<BoardInfoDTO> getAvailableBoards(Long userId);
 
-	List<Board> getDisabledBoards(Long userId);
+	List<BoardInfoDTO> getDisabledBoards(Long userId);
 
 	Board getBoardDetails(Long userId, Long id);
 	

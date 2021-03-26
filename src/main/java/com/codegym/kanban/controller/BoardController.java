@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.codegym.kanban.dto.BoardInfoDTO;
 import com.codegym.kanban.exception.BadRequestFieldException;
 import com.codegym.kanban.model.AppUser;
 import com.codegym.kanban.model.Board;
@@ -37,22 +38,24 @@ public class BoardController {
 	private AppUtils appUtils;
 	
 	@GetMapping
-	public ResponseEntity<List<Board>> getAllBoardsWithStatus(
+	public ResponseEntity<List<BoardInfoDTO>> getAllBoardsWithStatus(
 			@RequestParam(name = "type", defaultValue = "available") String type, 
 			Principal principal) {
 		AppUser user = appUtils.extractUserInfoFromToken(principal);
 		
-		List<Board> boards;
+		List<BoardInfoDTO> boards;
 		if (type.equals("archived")) 
 			boards = boardService.getDisabledBoards(user.getId());
 		else 
 			boards = boardService.getAvailableBoards(user.getId());
 
-		return new ResponseEntity<List<Board>>(boards, HttpStatus.OK); 
+		return new ResponseEntity<List<BoardInfoDTO>>(boards, HttpStatus.OK); 
 	}
 	
 	@GetMapping("/{boardId}")
-	public ResponseEntity<Board> getBoardById(Principal principal, Long boardId) {
+	public ResponseEntity<Board> getBoardById(
+			Principal principal, 
+			@PathVariable("boardId") Long boardId) {
 		AppUser user = appUtils.extractUserInfoFromToken(principal);
 		Board board = boardService.getBoardDetails(user.getId(), boardId);
 		return new ResponseEntity<Board>(board, HttpStatus.OK); 

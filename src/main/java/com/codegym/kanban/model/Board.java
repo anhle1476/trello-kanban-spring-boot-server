@@ -50,7 +50,6 @@ public class Board {
 	private AppUser appUser;
 	
 	@OneToMany(mappedBy = "board", fetch = FetchType.LAZY, orphanRemoval = true)
-	@JsonIgnore
 	private List<CardColumn> cardColumns;
 
 

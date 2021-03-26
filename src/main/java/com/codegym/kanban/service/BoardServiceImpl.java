@@ -7,6 +7,7 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.codegym.kanban.dto.BoardInfoDTO;
 import com.codegym.kanban.exception.BoardNotFoundException;
 import com.codegym.kanban.exception.UserNotFoundException;
 import com.codegym.kanban.model.AppUser;
@@ -24,13 +25,13 @@ public class BoardServiceImpl implements BoardService {
 	private AppUserRepository appUserRepository;
 
 	@Override
-	public List<Board> getAvailableBoards(Long userId) {
-		return boardRepository.findByStatusEnabledIsTrueAndAppUserId(userId);
+	public List<BoardInfoDTO> getAvailableBoards(Long userId) {
+		return boardRepository.findByStatusEnabledIsTrueAndAppUserIdOrderByStatusUpdatedAtDesc(userId);
 	}
 
 	@Override
-	public List<Board> getDisabledBoards(Long userId) {
-		return boardRepository.findByStatusEnabledIsFalseAndAppUserId(userId);
+	public List<BoardInfoDTO> getDisabledBoards(Long userId) {
+		return boardRepository.findByStatusEnabledIsFalseAndAppUserIdOrderByStatusUpdatedAtDesc(userId);
 	}
 	
 	@Override
