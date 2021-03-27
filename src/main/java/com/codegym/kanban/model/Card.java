@@ -37,7 +37,6 @@ public class Card {
 	@Column(nullable = false)
 	private String title;
 	
-	@SafeHtml(whitelistType = WhiteListType.RELAXED)
 	@Column(length = 10000)
 	private String details;
 	

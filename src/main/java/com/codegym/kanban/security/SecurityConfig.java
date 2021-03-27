@@ -3,6 +3,8 @@ package com.codegym.kanban.security;
 import static com.codegym.kanban.model.Role.ROLE_ADMIN;
 import static com.codegym.kanban.model.Role.ROLE_USER;
 
+import java.util.Arrays;
+
 import javax.crypto.SecretKey;
 
 import org.springframework.context.annotation.Bean;
@@ -46,7 +48,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	  @Override
 	  protected void configure(HttpSecurity http) throws Exception {
 	    http
-	      .cors().and()
 	      .csrf().disable()
 	      .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 	      .and()
@@ -59,6 +60,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	      .antMatchers("/api/**").hasAnyAuthority(ROLE_ADMIN.name(), ROLE_USER.name())	      
 	      .anyRequest()
 	      .authenticated();
+	    
+	    http.cors();
+	    
 	  }
 
 	  @Bean
@@ -76,9 +80,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	  
 	  @Bean
 	  CorsConfigurationSource corsConfigurationSource() {
+		  CorsConfiguration configuration = new CorsConfiguration();
+		  configuration.setAllowedOrigins(Arrays.asList("*"));
+		  configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+		  configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token"));
+		  configuration.setExposedHeaders(Arrays.asList("x-auth-token"));
 		  UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		  source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
+		  source.registerCorsConfiguration("/**", configuration);
 		  return source;
 	  }
+	  
 
 }

@@ -29,6 +29,7 @@ import com.codegym.kanban.utils.AppUtils;
 
 @RestController
 @RequestMapping("api/v1/boards")
+//@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class BoardController {
 	
 	@Autowired
