@@ -28,7 +28,7 @@ public class CardColumnServiceImpl implements CardColumnService {
 	
 	@Override
 	public CardColumn findById(Long userId, Long columnId) {
-		return cardColumnRepository.findAvailableColumn(userId, columnId)
+		return cardColumnRepository.findUserColumnById(userId, columnId)
 				.orElseThrow(() -> getColumnNotFoundException(columnId));
 	}
 
@@ -47,6 +47,7 @@ public class CardColumnServiceImpl implements CardColumnService {
 	@Transactional
 	public CardColumn updateColumn(Long userId, CardColumn cardColumn) {
 		CardColumn found = findById(userId, cardColumn.getId());
+		assertColumnStatusIsDisabled(found.getStatus());
 		found.setTitle(cardColumn.getTitle());
 		return cardColumnRepository.save(found);
 	}
@@ -62,11 +63,11 @@ public class CardColumnServiceImpl implements CardColumnService {
 	public void disableColumn(Long userId, Long cardColumnId) {
 		CardColumn column = findById(userId, cardColumnId);
 		Status status = column.getStatus();
-		if (!status.isEnabled()) 
-			throw new StateDisabledException("Cột đã bị vô hiệu hóa sẵn");
+		assertColumnStatusIsDisabled(status);
 		status.setEnabled(false);
 		cardColumnRepository.save(column);
 	}
+
 
 	@Override
 	@Transactional
@@ -81,6 +82,12 @@ public class CardColumnServiceImpl implements CardColumnService {
 	private Board getCurrentBoard(Long userId, Long boardId) {
 		return boardRepository.findByStatusEnabledIsTrueAndAppUserIdAndId(userId, boardId)
 			.orElseThrow(() -> new BoardNotFoundException("Bảng " + boardId + " không có sẵn"));
+	}
+	
+
+	private void assertColumnStatusIsDisabled(Status status) {
+		if (!status.isEnabled()) 
+			throw new StateDisabledException("Cột đã bị vô hiệu hóa, không thể cập nhật");
 	}
 	
 	private CardColumnNotFoundException getColumnNotFoundException(Long colId) {

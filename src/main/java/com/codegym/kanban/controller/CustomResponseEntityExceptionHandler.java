@@ -12,6 +12,7 @@ import com.codegym.kanban.dto.GeneralExceptionResponseDTO;
 import com.codegym.kanban.exception.BadRequestFieldException;
 import com.codegym.kanban.exception.BoardNotFoundException;
 import com.codegym.kanban.exception.CardColumnNotFoundException;
+import com.codegym.kanban.exception.DeleteEnabledEntityException;
 import com.codegym.kanban.exception.StateDisabledException;
 import com.codegym.kanban.exception.UserNotFoundException;
 
@@ -47,6 +48,12 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
 	private ResponseEntity<GeneralExceptionResponseDTO> handleBadRequestFieldException(
 			BadRequestFieldException ex, WebRequest request) {
 		return responseToGeneralExceptions(ex, BadRequestFieldException.ERROR_CODE);
+	}
+	
+	@ExceptionHandler(value = {DeleteEnabledEntityException.class})
+	private ResponseEntity<GeneralExceptionResponseDTO> handleDeleteEnabledEntityException(
+			DeleteEnabledEntityException ex, WebRequest request) {
+		return responseToGeneralExceptions(ex, DeleteEnabledEntityException.ERROR_CODE);
 	}
 
 	private ResponseEntity<GeneralExceptionResponseDTO> responseToGeneralExceptions(RuntimeException ex, Integer code) {

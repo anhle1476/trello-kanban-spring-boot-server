@@ -56,7 +56,7 @@ public class CardServiceImpl implements CardService {
 	}
 	
 	private CardColumn findColumn(Long userId,Long cardColumnId) {
-		 return cardColumnRepository.findAvailableColumn(userId, cardColumnId).orElseThrow(
+		 return cardColumnRepository.findUserColumnById(userId, cardColumnId).orElseThrow(
 					() -> new CardColumnNotFoundException("Cột " + cardColumnId + " không có sẵn"));
 	}
 

@@ -15,9 +15,8 @@ public interface CardColumnRepository extends JpaRepository<CardColumn, Long> {
 	
 	@Query("SELECT c FROM CardColumn c "
 			+ "WHERE c.id = :id "
-			+ "AND c.status.enabled = TRUE "
 			+ "AND c.board.appUser.id = :userId")
-	Optional<CardColumn> findAvailableColumn(Long userId, Long id);
+	Optional<CardColumn> findUserColumnById(Long userId, Long id);
 	
 	@Modifying
 	@Query("UPDATE CardColumn c SET c.title = :title "
