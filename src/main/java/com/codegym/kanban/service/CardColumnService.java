@@ -5,6 +5,9 @@ import java.util.Map;
 import com.codegym.kanban.model.CardColumn;
 
 public interface CardColumnService {
+
+	CardColumn findById(Long userId, Long cardColumnId);
+	
 	CardColumn saveColumn(Long userId, Long boardId, CardColumn cardColumn);
 	
 	CardColumn updateColumn(Long userId, CardColumn cardColumn);

@@ -9,8 +9,11 @@ import org.springframework.stereotype.Service;
 
 import com.codegym.kanban.exception.BoardNotFoundException;
 import com.codegym.kanban.exception.CardColumnNotFoundException;
+import com.codegym.kanban.exception.DeleteEnabledEntityException;
+import com.codegym.kanban.exception.StateDisabledException;
 import com.codegym.kanban.model.Board;
 import com.codegym.kanban.model.CardColumn;
+import com.codegym.kanban.model.Status;
 import com.codegym.kanban.repository.BoardRepository;
 import com.codegym.kanban.repository.CardColumnRepository;
 
@@ -22,6 +25,12 @@ public class CardColumnServiceImpl implements CardColumnService {
 	
 	@Autowired
 	private CardColumnRepository cardColumnRepository;
+	
+	@Override
+	public CardColumn findById(Long userId, Long columnId) {
+		return cardColumnRepository.findAvailableColumn(userId, columnId)
+				.orElseThrow(() -> getColumnNotFoundException(columnId));
+	}
 
 	@Override
 	@Transactional
@@ -34,33 +43,39 @@ public class CardColumnServiceImpl implements CardColumnService {
 		return cardColumnRepository.save(cardColumn);
 	}
 
-	
-
 	@Override
+	@Transactional
 	public CardColumn updateColumn(Long userId, CardColumn cardColumn) {
-		CardColumn found = cardColumnRepository.findAvailableColumn(userId, cardColumn.getId())
-				.orElseThrow(() -> getColumnNotFoundException(cardColumn.getId()));
+		CardColumn found = findById(userId, cardColumn.getId());
 		found.setTitle(cardColumn.getTitle());
 		return cardColumnRepository.save(found);
 	}
 
 	@Override
+	@Transactional
 	public void updateColumnsOrder(Long userId, Long boardId, Map<Long, Long> orderMap) {
 
 	}
 
 	@Override
+	@Transactional
 	public void disableColumn(Long userId, Long cardColumnId) {
-		Integer affected = cardColumnRepository.disableColumn(userId, cardColumnId);
-		if (affected == 0)
-			throw getColumnNotFoundException(cardColumnId);
+		CardColumn column = findById(userId, cardColumnId);
+		Status status = column.getStatus();
+		if (!status.isEnabled()) 
+			throw new StateDisabledException("Cột đã bị vô hiệu hóa sẵn");
+		status.setEnabled(false);
+		cardColumnRepository.save(column);
 	}
 
 	@Override
+	@Transactional
 	public void deleteColumn(Long userId, Long cardColumnId) {
-		Integer affected = cardColumnRepository.deleteColumn(userId, cardColumnId);
-		if (affected == 0)
-			throw getColumnNotFoundException(cardColumnId);
+		CardColumn column = findById(userId, cardColumnId);
+		Status status = column.getStatus();
+		if (status.isEnabled()) 
+			throw new DeleteEnabledEntityException("Không thể xóa cột chưa vô hiệu hóa");
+		cardColumnRepository.delete(column);
 	}
 	
 	private Board getCurrentBoard(Long userId, Long boardId) {

@@ -24,17 +24,4 @@ public interface CardColumnRepository extends JpaRepository<CardColumn, Long> {
 			+ "WHERE c.id = :id "
 			+ "AND c.board.appUser.id = :userId")
 	Integer updateColumnTitle(Long userId, Long id, String title);
-	
-	@Modifying
-	@Query("UPDATE CardColumn c SET c.status.enabled = FALSE "
-			+ "WHERE c.id = :id "
-			+ "AND c.board.appUser.id = :userId")
-	Integer disableColumn(Long userId, Long id);
-	
-	@Modifying
-	@Query("DELETE FROM CardColumn c "
-			+ "WHERE c.id = :id "
-			+ "AND c.board.appUser.id = :userId")
-	Integer deleteColumn(Long userId, Long id);
-	
 }
