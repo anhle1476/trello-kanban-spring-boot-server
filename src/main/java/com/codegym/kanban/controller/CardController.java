@@ -43,7 +43,7 @@ public class CardController {
 		
 		AppUser user = appUtils.extractUserInfoFromToken(principal);
 		
-		Card saved = cardService.saveCard(user.getId(), boardId, columnId, card);
+		Card saved = cardService.saveCard(user.getId(), columnId, card);
 		
 		return new ResponseEntity<Card>(saved, HttpStatus.CREATED);
 	}

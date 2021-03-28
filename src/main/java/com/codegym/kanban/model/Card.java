@@ -1,5 +1,6 @@
 package com.codegym.kanban.model;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import javax.persistence.Column;
@@ -14,12 +15,14 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.SafeHtml;
 import org.hibernate.validator.constraints.SafeHtml.WhiteListType;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;
@@ -33,7 +36,7 @@ public class Card {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@Size(min = 1, max = 30, message = "Tiêu đề thẻ phải chứa từ 1-30 ký tự")
+	@Size(min = 1, max = 255, message = "Tiêu đề thẻ phải chứa từ 1-255 ký tự")
 	@Column(nullable = false)
 	private String title;
 	
@@ -42,9 +45,15 @@ public class Card {
 	
 	@PositiveOrZero(message = "Thứ tự thẻ không hợp lệ")
 	private Integer cardOrder;
+
+	@Pattern(regexp = "^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$", message = "Mã màu không hợp lệ")
+	private String label;
 	
-	@Enumerated(EnumType.STRING)
-	private Label label;
+	@JsonFormat(pattern = "dd-MM-yyyy")
+	private LocalDate startDate;
+	
+	@JsonFormat(pattern = "dd-MM-yyyy")
+	private LocalDate dueDate;
 	
 	@Embedded
 	private Status status;
@@ -52,12 +61,6 @@ public class Card {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
 	private CardColumn cardColumn;
-
-	@Override
-	public String toString() {
-		return "Card [id=" + id + ", title=" + title + ", details=" + details + ", cardOrder=" + cardOrder + ", label="
-				+ label + ", status=" + status + "]";
-	}
 	
 	@PrePersist
 	protected void onPersist() {
@@ -68,6 +71,12 @@ public class Card {
 	@PreUpdate
 	protected void onUpdate() {
 		this.status.setUpdatedAt(LocalDateTime.now());
+	}
+
+	@Override
+	public String toString() {
+		return "Card [id=" + id + ", title=" + title + ", details=" + details + ", cardOrder=" + cardOrder + ", label="
+				+ label + ", startDate=" + startDate + ", dueDate=" + dueDate + ", status=" + status + "]";
 	}
 	
 }

@@ -20,8 +20,8 @@ public class CardServiceImpl implements CardService {
 	private CardRepository cardRepository;
 
 	@Override
-	public Card saveCard(Long userId, Long boardId, Long cardColumnId, Card card) {
-		CardColumn column = findColumn(userId, boardId, cardColumnId);
+	public Card saveCard(Long userId, Long cardColumnId, Card card) {
+		CardColumn column = findColumn(userId, cardColumnId);
 		Integer maxOrder = cardRepository.getMaxCardOrder(cardColumnId).orElse(-1);
 		
 		card.setCardColumn(column);
@@ -33,31 +33,30 @@ public class CardServiceImpl implements CardService {
 	
 
 	@Override
-	public Card updateCard(Long userId, Long boardId, Long cardColumnId, Card card) {
-		// TODO Auto-generated method stub
+	public Card updateCard(Long userId,Long cardColumnId, Card card) {
 		return null;
 	}
 
 	@Override
-	public void updateCardsOrder(Long userId, Long boardId, Long cardColumnId, Map<Long, Long> orderMap) {
+	public void updateCardsOrder(Long userId, Long cardColumnId, Map<Long, Long> orderMap) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void disableCard(Long userId, Long boardId, Long cardColumnId, Long cardId) {
+	public void disableCard(Long userId, Long cardId) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void deleteCard(Long userId, Long boardId, Long cardColumnId, Long cardId) {
+	public void deleteCard(Long userId, Long cardId) {
 		// TODO Auto-generated method stub
 		
 	}
 	
-	private CardColumn findColumn(Long userId, Long boardId, Long cardColumnId) {
-		 return cardColumnRepository.findAvailableColumn(userId, boardId, cardColumnId).orElseThrow(
+	private CardColumn findColumn(Long userId,Long cardColumnId) {
+		 return cardColumnRepository.findAvailableColumn(userId, cardColumnId).orElseThrow(
 					() -> new CardColumnNotFoundException("Cột " + cardColumnId + " không có sẵn"));
 	}
 

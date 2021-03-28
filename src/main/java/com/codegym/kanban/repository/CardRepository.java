@@ -10,4 +10,5 @@ import com.codegym.kanban.model.Card;
 public interface CardRepository extends JpaRepository<Card, Long> {
 	@Query("SELECT MAX(c.cardOrder) FROM Card c WHERE c.cardColumn.id = :columnId")
 	Optional<Integer> getMaxCardOrder(Long columnId);
+	
 }

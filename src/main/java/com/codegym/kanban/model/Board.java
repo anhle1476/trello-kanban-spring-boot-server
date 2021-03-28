@@ -18,6 +18,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;
@@ -41,6 +42,8 @@ public class Board {
 	@Pattern(regexp = "^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$", message = "Mã màu không hợp lệ")
 	private String color;
 	
+	@JsonFormat(pattern = "dd-MM-yyyy HH:mm")
+	private LocalDateTime lastedView;
 	
 	@Embedded
 	private Status status;
@@ -52,21 +55,23 @@ public class Board {
 	@OneToMany(mappedBy = "board", fetch = FetchType.LAZY, orphanRemoval = true)
 	private List<CardColumn> cardColumns;
 
-
 	@Override
 	public String toString() {
-		return "Board [id=" + id + ", title=" + title + ", color=" + color + ", status=" + status + "]";
+		return "Board [id=" + id + ", title=" + title + ", color=" + color + ", lastedView=" + lastedView + ", status="
+				+ status + "]";
 	}
+	
 	
 	@PrePersist
 	protected void onPersist() {
 		this.status = new Status();
 		this.status.setCreatedAt(LocalDateTime.now());
+		this.lastedView = LocalDateTime.now();
 	}
 	
 	@PreUpdate
 	protected void onUpdate() {
 		this.status.setUpdatedAt(LocalDateTime.now());
 	}
-	
+
 }

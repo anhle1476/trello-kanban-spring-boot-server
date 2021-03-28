@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.codegym.kanban.exception.BoardNotFoundException;
+import com.codegym.kanban.exception.CardColumnNotFoundException;
 import com.codegym.kanban.model.Board;
 import com.codegym.kanban.model.CardColumn;
 import com.codegym.kanban.repository.BoardRepository;
@@ -36,8 +37,11 @@ public class CardColumnServiceImpl implements CardColumnService {
 	
 
 	@Override
-	public CardColumn updateColumn(Long userId, Long boardId, CardColumn cardColumn) {
-		return null;
+	public CardColumn updateColumn(Long userId, CardColumn cardColumn) {
+		CardColumn found = cardColumnRepository.findAvailableColumn(userId, cardColumn.getId())
+				.orElseThrow(() -> getColumnNotFoundException(cardColumn.getId()));
+		found.setTitle(cardColumn.getTitle());
+		return cardColumnRepository.save(found);
 	}
 
 	@Override
@@ -46,18 +50,26 @@ public class CardColumnServiceImpl implements CardColumnService {
 	}
 
 	@Override
-	public void disableColumn(Long userId, Long boardId, Long cardColumnId) {
-		
+	public void disableColumn(Long userId, Long cardColumnId) {
+		Integer affected = cardColumnRepository.disableColumn(userId, cardColumnId);
+		if (affected == 0)
+			throw getColumnNotFoundException(cardColumnId);
 	}
 
 	@Override
-	public void deleteColumn(Long userId, Long boardId, Long cardColumnId) {
-		
+	public void deleteColumn(Long userId, Long cardColumnId) {
+		Integer affected = cardColumnRepository.deleteColumn(userId, cardColumnId);
+		if (affected == 0)
+			throw getColumnNotFoundException(cardColumnId);
 	}
 	
 	private Board getCurrentBoard(Long userId, Long boardId) {
 		return boardRepository.findByStatusEnabledIsTrueAndAppUserIdAndId(userId, boardId)
 			.orElseThrow(() -> new BoardNotFoundException("Bảng " + boardId + " không có sẵn"));
+	}
+	
+	private CardColumnNotFoundException getColumnNotFoundException(Long colId) {
+		return new CardColumnNotFoundException("Cột " + colId + " không có sẵn");
 	}
 
 }

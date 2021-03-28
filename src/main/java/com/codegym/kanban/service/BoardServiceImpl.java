@@ -1,5 +1,6 @@
 package com.codegym.kanban.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -36,8 +37,10 @@ public class BoardServiceImpl implements BoardService {
 	
 	@Override
 	public Board getBoardDetails(Long userId, Long id) {
-		return boardRepository.findByStatusEnabledIsTrueAndAppUserIdAndId(userId, id)
+		 Board board = boardRepository.findByStatusEnabledIsTrueAndAppUserIdAndId(userId, id)
 				.orElseThrow(() -> getBoardException(id));
+		 board.setLastedView(LocalDateTime.now());
+		 return boardRepository.save(board);
 	}
 
 	@Transactional
