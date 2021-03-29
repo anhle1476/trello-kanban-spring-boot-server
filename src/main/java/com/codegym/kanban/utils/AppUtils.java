@@ -12,7 +12,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
+import com.codegym.kanban.exception.StateDisabledException;
 import com.codegym.kanban.model.AppUser;
+import com.codegym.kanban.model.Status;
 
 @Component
 public class AppUtils {
@@ -29,5 +31,10 @@ public class AppUtils {
 	
 	public AppUser extractUserInfoFromToken(Principal principal) {
 		return (AppUser) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
+	}
+	
+	public void assertStatusIsDisabled(Status status) {
+		if (!status.isEnabled()) 
+			throw new StateDisabledException("Đối tượng đã bị vô hiệu hóa, không thể cập nhật");
 	}
 }

@@ -17,7 +17,6 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;
@@ -44,10 +43,8 @@ public class Card {
 	@Pattern(regexp = "^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$", message = "Mã màu không hợp lệ")
 	private String label;
 	
-	@JsonFormat(pattern = "dd-MM-yyyy")
 	private LocalDate startDate;
 	
-	@JsonFormat(pattern = "dd-MM-yyyy")
 	private LocalDate dueDate;
 	
 	@Embedded
@@ -61,6 +58,10 @@ public class Card {
 	protected void onPersist() {
 		this.status = new Status();
 		this.status.setCreatedAt(LocalDateTime.now());
+		if (label == null) 
+			label = "#fff";
+		if (details == null)
+			details = "";
 	}
 	
 	@PreUpdate

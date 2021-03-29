@@ -10,12 +10,12 @@ import org.springframework.stereotype.Service;
 import com.codegym.kanban.exception.BoardNotFoundException;
 import com.codegym.kanban.exception.CardColumnNotFoundException;
 import com.codegym.kanban.exception.DeleteEnabledEntityException;
-import com.codegym.kanban.exception.StateDisabledException;
 import com.codegym.kanban.model.Board;
 import com.codegym.kanban.model.CardColumn;
 import com.codegym.kanban.model.Status;
 import com.codegym.kanban.repository.BoardRepository;
 import com.codegym.kanban.repository.CardColumnRepository;
+import com.codegym.kanban.utils.AppUtils;
 
 @Service
 public class CardColumnServiceImpl implements CardColumnService {
@@ -25,6 +25,9 @@ public class CardColumnServiceImpl implements CardColumnService {
 	
 	@Autowired
 	private CardColumnRepository cardColumnRepository;
+	
+	@Autowired
+	private AppUtils appUtils;
 	
 	@Override
 	public CardColumn findById(Long userId, Long columnId) {
@@ -47,7 +50,7 @@ public class CardColumnServiceImpl implements CardColumnService {
 	@Transactional
 	public CardColumn updateColumn(Long userId, CardColumn cardColumn) {
 		CardColumn found = findById(userId, cardColumn.getId());
-		assertColumnStatusIsDisabled(found.getStatus());
+		appUtils.assertStatusIsDisabled(found.getStatus());
 		found.setTitle(cardColumn.getTitle());
 		return cardColumnRepository.save(found);
 	}
@@ -63,7 +66,7 @@ public class CardColumnServiceImpl implements CardColumnService {
 	public void disableColumn(Long userId, Long cardColumnId) {
 		CardColumn column = findById(userId, cardColumnId);
 		Status status = column.getStatus();
-		assertColumnStatusIsDisabled(status);
+		appUtils.assertStatusIsDisabled(status);
 		status.setEnabled(false);
 		cardColumnRepository.save(column);
 	}
@@ -82,12 +85,6 @@ public class CardColumnServiceImpl implements CardColumnService {
 	private Board getCurrentBoard(Long userId, Long boardId) {
 		return boardRepository.findByStatusEnabledIsTrueAndAppUserIdAndId(userId, boardId)
 			.orElseThrow(() -> new BoardNotFoundException("Bảng " + boardId + " không có sẵn"));
-	}
-	
-
-	private void assertColumnStatusIsDisabled(Status status) {
-		if (!status.isEnabled()) 
-			throw new StateDisabledException("Cột đã bị vô hiệu hóa, không thể cập nhật");
 	}
 	
 	private CardColumnNotFoundException getColumnNotFoundException(Long colId) {
