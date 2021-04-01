@@ -3,6 +3,7 @@ package com.codegym.kanban.model;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -44,7 +45,7 @@ public class CardColumn {
 	@Embedded
 	private Status status;
 	
-	@OneToMany(mappedBy = "cardColumn",fetch = FetchType.LAZY, orphanRemoval = true)
+	@OneToMany(mappedBy = "cardColumn",fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
 	private List<Card> cards;
 
 	@Override

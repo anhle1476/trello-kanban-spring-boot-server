@@ -29,7 +29,6 @@ import com.codegym.kanban.utils.AppUtils;
 
 @RestController
 @RequestMapping("api/v1/boards")
-//@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class BoardController {
 	
 	@Autowired
@@ -98,9 +97,19 @@ public class BoardController {
 		return new ResponseEntity<Board>(savedBoard, HttpStatus.CREATED); 
 	}
 	
+	@PutMapping("/{boardId}/enable")
+	public ResponseEntity<Board> enableBoardById(
+			Principal principal, 
+			@PathVariable("boardId") Long boardId) {
+		AppUser user = appUtils.extractUserInfoFromToken(principal);
+		Board board = boardService.enableBoard(user.getId(), boardId);
+		return new ResponseEntity<Board>(board, HttpStatus.OK); 
+	}
+
+	
 	@DeleteMapping("/{boardId}")
 	@ResponseStatus(code = HttpStatus.NO_CONTENT)
-	public void updateBoard(
+	public void deleteBoard(
 			@PathVariable("boardId") Long boardId,
 			@RequestParam(value = "type", defaultValue = "archived") String type,
 			Principal principal) {

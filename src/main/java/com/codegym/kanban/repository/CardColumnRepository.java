@@ -1,5 +1,7 @@
 package com.codegym.kanban.repository;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,4 +25,7 @@ public interface CardColumnRepository extends JpaRepository<CardColumn, Long> {
 			+ "WHERE c.id = :id "
 			+ "AND c.board.appUser.id = :userId")
 	Integer updateColumnTitle(Long userId, Long id, String title);
+	
+	@Query("SELECT c FROM CardColumn c WHERE c.board.id = :boardId AND c.id IN(:colIds)")
+	List<CardColumn> findByIdIn(Long boardId, Collection<Long> colIds);
 }

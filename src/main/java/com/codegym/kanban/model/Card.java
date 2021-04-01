@@ -13,6 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
@@ -30,11 +31,13 @@ public class Card {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
+	@NotBlank(message = "Tiêu đề thẻ không được để trống")
 	@Size(min = 1, max = 255, message = "Tiêu đề thẻ phải chứa từ 1-255 ký tự")
 	@Column(nullable = false)
 	private String title;
-	
-	@Column(length = 10000)
+
+	@Size(min = 0, max = 2000, message = "Nội dung không được quá 2000 ký tự")
+	@Column(length = 2000)
 	private String details;
 	
 	@PositiveOrZero(message = "Thứ tự thẻ không hợp lệ")

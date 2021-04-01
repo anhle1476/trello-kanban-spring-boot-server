@@ -1,10 +1,17 @@
 package com.codegym.kanban.service;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.codegym.kanban.dto.CardOrderDifferDTO;
 import com.codegym.kanban.exception.CardColumnNotFoundException;
 import com.codegym.kanban.exception.CardNotFoundException;
 import com.codegym.kanban.exception.DeleteEnabledEntityException;
@@ -26,6 +33,7 @@ public class CardServiceImpl implements CardService {
 	private AppUtils appUtils;
 
 	@Override
+	@Transactional
 	public Card saveCard(Long userId, Long cardColumnId, Card card) {
 		CardColumn column = findColumn(userId, cardColumnId);
 		Integer maxOrder = cardRepository.getMaxCardOrder(cardColumnId).orElse(-1);
@@ -39,6 +47,7 @@ public class CardServiceImpl implements CardService {
 	
 
 	@Override
+	@Transactional
 	public Card updateCard(Long userId, Card card) {
 		Card found = getUserCardById(userId, card.getId());
 		appUtils.assertStatusIsDisabled(found.getStatus());
@@ -53,19 +62,49 @@ public class CardServiceImpl implements CardService {
 	}
 
 	@Override
-	public void updateCardsOrder(Long userId, Map<Long, Long> orderMap) {
-		// TODO Auto-generated method stub
+	@Transactional
+	public void updateCardsOrder(Long userId, Long boardId, Map<Long, CardOrderDifferDTO> orderMap) {
+		Set<Long> columIdSet = orderMap.values()
+			.stream()
+			.map(obj -> obj.getColumnId())
+			.collect(Collectors.toSet());
 		
+		Map<Long, CardColumn> columnMap = cardColumnRepository.findByIdIn(boardId, columIdSet)
+			.stream()
+			.collect(Collectors.toMap(CardColumn::getId, Function.identity()));
+		
+		List<Card> cards = cardRepository.findByIdIn(userId, orderMap.keySet());
+		
+		for (Card card : cards) {
+			CardOrderDifferDTO differ = orderMap.get(card.getId());
+			CardColumn newColumn = columnMap.get(differ.getColumnId());
+			card.setCardColumn(newColumn);
+			card.setCardOrder(differ.getCardOrder());
+		}
+		
+		cardRepository.saveAll(cards);
 	}
 
 	@Override
+	@Transactional
 	public void disableCard(Long userId, Long cardId) {
 		Card found = getUserCardById(userId, cardId);
 		appUtils.assertStatusIsDisabled(found.getStatus());
-		found.getStatus().setEnabled(false);		
+		found.getStatus().setEnabled(false);	
+		cardRepository.save(found);
+	}
+
+
+	@Override
+	@Transactional
+	public Card enableCard(Long userId, Long cardId) {
+		Card found = getUserCardById(userId, cardId);
+		found.getStatus().setEnabled(true);	
+		return cardRepository.save(found);
 	}
 
 	@Override
+	@Transactional
 	public void deleteCard(Long userId, Long cardId) {
 		Card found = getUserCardById(userId, cardId);
 		if (found.getStatus().isEnabled())
@@ -84,4 +123,6 @@ public class CardServiceImpl implements CardService {
 		 return cardColumnRepository.findUserColumnById(userId, cardColumnId).orElseThrow(
 					() -> new CardColumnNotFoundException("Cột " + cardColumnId + " không có sẵn"));
 	}
+
+
 }

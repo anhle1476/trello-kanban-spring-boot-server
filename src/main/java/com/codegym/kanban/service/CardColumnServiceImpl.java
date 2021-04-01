@@ -1,5 +1,6 @@
 package com.codegym.kanban.service;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.transaction.Transactional;
@@ -57,8 +58,13 @@ public class CardColumnServiceImpl implements CardColumnService {
 
 	@Override
 	@Transactional
-	public void updateColumnsOrder(Long userId, Long boardId, Map<Long, Long> orderMap) {
-
+	public void updateColumnsOrder(Long userId, Long boardId, Map<Long, Integer> orderMap) {
+		List<CardColumn> columns = cardColumnRepository.findByIdIn(boardId, orderMap.keySet());
+		for (CardColumn column : columns) {
+			Integer newOrder = orderMap.get(column.getId());
+			column.setColumnOrder(newOrder);
+		}
+		cardColumnRepository.saveAll(columns);
 	}
 
 	@Override
@@ -70,7 +76,14 @@ public class CardColumnServiceImpl implements CardColumnService {
 		status.setEnabled(false);
 		cardColumnRepository.save(column);
 	}
-
+	
+	@Override
+	@Transactional
+	public CardColumn enableColumn(Long userId, Long cardColumnId) {
+		CardColumn column = findById(userId, cardColumnId);
+		column.getStatus().setEnabled(true);
+		return cardColumnRepository.save(column);
+	}
 
 	@Override
 	@Transactional

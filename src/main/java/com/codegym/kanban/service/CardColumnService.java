@@ -12,9 +12,12 @@ public interface CardColumnService {
 	
 	CardColumn updateColumn(Long userId, CardColumn cardColumn);
 	
-	void updateColumnsOrder(Long userId, Long boardId, Map<Long, Long> orderMap);
+	void updateColumnsOrder(Long userId, Long boardId, Map<Long, Integer> orderMap);
 	
 	void disableColumn(Long userId, Long cardColumnId);
 	
+	CardColumn enableColumn(Long userId, Long cardColumnId);
+	
 	void deleteColumn(Long userId, Long cardColumnId);
+
 }

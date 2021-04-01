@@ -92,4 +92,15 @@ public class CardColumnController {
 		else 
 			cardColumnService.disableColumn(user.getId(), columnId);
 	}
+	
+	@PutMapping("/{columnId}/enable")
+	public ResponseEntity<CardColumn> enableColumn(
+			Principal principal,
+			@PathVariable("boardId") Long boardId,
+			@PathVariable("columnId") Long columnId
+			) {
+		AppUser user = appUtils.extractUserInfoFromToken(principal);
+		CardColumn enabledColumn = cardColumnService.enableColumn(user.getId(), columnId);
+		return new ResponseEntity<CardColumn>(enabledColumn, HttpStatus.OK);
+	}
 }

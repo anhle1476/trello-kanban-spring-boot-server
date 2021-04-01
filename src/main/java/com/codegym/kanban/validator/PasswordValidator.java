@@ -11,7 +11,7 @@ import com.codegym.kanban.model.AppUser;
 @Component
 public class PasswordValidator implements Validator  {
 	
-	private Pattern passwordPartern = Pattern.compile("^\\pL{8,20}$");;
+	private Pattern passwordPartern = Pattern.compile("^[\\pL\\d]{8,20}$");;
 
 	@Override
 	public boolean supports(Class<?> clazz) {

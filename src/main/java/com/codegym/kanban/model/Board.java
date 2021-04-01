@@ -3,6 +3,7 @@ package com.codegym.kanban.model;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -42,7 +43,6 @@ public class Board {
 	@Pattern(regexp = "^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$", message = "Mã màu không hợp lệ")
 	private String color;
 	
-	@JsonFormat(pattern = "dd-MM-yyyy HH:mm")
 	private LocalDateTime lastedView;
 	
 	@Embedded
@@ -52,7 +52,7 @@ public class Board {
 	@JsonIgnore
 	private AppUser appUser;
 	
-	@OneToMany(mappedBy = "board", fetch = FetchType.LAZY, orphanRemoval = true)
+	@OneToMany(mappedBy = "board", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
 	private List<CardColumn> cardColumns;
 
 	@Override

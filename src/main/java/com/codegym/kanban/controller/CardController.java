@@ -75,7 +75,7 @@ public class CardController {
 	}
 	
 	@DeleteMapping("/{cardId}")
-	public void deleteColumn(
+	public void deleteCard(
 			Principal principal,
 			@PathVariable("boardId") Long boardId,
 			@PathVariable("columnId") Long columnId,
@@ -89,5 +89,18 @@ public class CardController {
 			cardService.deleteCard(user.getId(), cardId);
 		else 
 			cardService.disableCard(user.getId(), cardId);
+	}
+	
+	@PutMapping("/{cardId}/enable")
+	public ResponseEntity<Card> enableColumn(
+			Principal principal,
+			@PathVariable("boardId") Long boardId,
+			@PathVariable("columnId") Long columnId,
+			@PathVariable("cardId") Long cardId
+			) {
+		AppUser user = appUtils.extractUserInfoFromToken(principal);		
+		Card enabled = cardService.enableCard(user.getId(), cardId);
+		
+		return new ResponseEntity<Card>(enabled, HttpStatus.CREATED);
 	}
 }

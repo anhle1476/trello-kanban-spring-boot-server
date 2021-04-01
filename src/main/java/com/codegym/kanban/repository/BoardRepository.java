@@ -23,7 +23,4 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 			+ "WHERE b.appUser.id = :appUserId AND b.id = :id")
 	Integer disableBoard(Long appUserId, Long id);
 	
-	@Modifying
-	@Query("DELETE FROM Board b WHERE b.appUser.id = :appUserId AND b.id = :id")
-	Integer deleteBoard(Long appUserId, Long id);
 }

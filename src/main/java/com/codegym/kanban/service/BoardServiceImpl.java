@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.codegym.kanban.dto.BoardInfoDTO;
 import com.codegym.kanban.exception.BoardNotFoundException;
+import com.codegym.kanban.exception.DeleteEnabledEntityException;
 import com.codegym.kanban.exception.UserNotFoundException;
 import com.codegym.kanban.model.AppUser;
 import com.codegym.kanban.model.Board;
@@ -75,20 +76,45 @@ public class BoardServiceImpl implements BoardService {
 		if (affected == 0)
 			throw getBoardException(id);
 	}
+	
+	@Override
+	public Board enableBoard(Long userId, Long id) {
+		Board found = boardRepository.findById(id).orElseThrow(() -> getBoardException(id));
+		if (found.getAppUser().getId() != userId)
+			throw new BoardNotFoundException("Bảng không thuộc về tài khoản này");
+		
+		found.getStatus().setEnabled(true);
+		return boardRepository.save(found);
+	}
 
 
 	@Transactional
 	@Override
 	public void deleteBoard(Long userId, Long id) {
-		Integer affected = boardRepository.deleteBoard(userId, id);
-		if (affected == 0)
-			throw getBoardException(id);
+		Board found = boardRepository.findById(id).orElseThrow(() -> getBoardException(id));
+		if (found.getAppUser().getId() != userId)
+			throw new BoardNotFoundException("Bảng không thuộc về tài khoản này");
+		if (found.getStatus().isEnabled())
+			throw new DeleteEnabledEntityException("Bảng đang hoạt động, không thể xóa");
+		boardRepository.delete(found);
+	}
+	
+
+
+	@Transactional
+	@Override
+	public void updateBoardColor(Long userId, Long boardId, String color) {
+		 Integer affected = boardRepository.updateBoardColor(userId, boardId, color);
+		 if (affected == 0)
+				throw getBoardException(boardId);
 	}
 	
 
 	private BoardNotFoundException getBoardException(Long id) {
 		return new BoardNotFoundException("Bảng ID " + id + " không tồn tại hoặc không thuộc về tài khoản này");
 	}
+
+	
 
 	
 
