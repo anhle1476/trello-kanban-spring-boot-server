@@ -21,6 +21,5 @@ public interface BoardService {
 	Board enableBoard(Long userId, Long id);
 	
 	void deleteBoard(Long userId, Long id);
-	
-	void updateBoardColor(Long userId, Long boardId, String color);
+
 }

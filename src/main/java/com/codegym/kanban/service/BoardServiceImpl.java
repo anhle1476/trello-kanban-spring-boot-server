@@ -100,16 +100,6 @@ public class BoardServiceImpl implements BoardService {
 	}
 	
 
-
-	@Transactional
-	@Override
-	public void updateBoardColor(Long userId, Long boardId, String color) {
-		 Integer affected = boardRepository.updateBoardColor(userId, boardId, color);
-		 if (affected == 0)
-				throw getBoardException(boardId);
-	}
-	
-
 	private BoardNotFoundException getBoardException(Long id) {
 		return new BoardNotFoundException("Bảng ID " + id + " không tồn tại hoặc không thuộc về tài khoản này");
 	}
